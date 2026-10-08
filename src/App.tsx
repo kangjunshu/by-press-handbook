@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "motion/react";
 import {
   chapters,
   shootChecks,
@@ -13,6 +19,7 @@ import {
 } from "./content";
 import {
   Camera,
+  Scene,
   Workflow,
   Shots,
   Rating,
@@ -73,6 +80,13 @@ export default function App() {
   const [storageError, SE] = useState(false);
   const [active, AS] = useState(0);
   const reduced = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 160,
+    damping: 32,
+    restDelta: 0.001,
+  });
+  const heroOffset = useTransform(scrollYProgress, [0, 0.2], [0, -35]);
   function update(p: Partial<Saved>) {
     setSaved((s) => ({ ...s, ...p }));
   }
@@ -635,9 +649,28 @@ export default function App() {
         >
           跳转到正文
         </a>
+        <motion.div
+          className="reading-progress no-print"
+          aria-hidden="true"
+          style={{ scaleX: reduced ? scrollYProgress : smoothProgress }}
+        />
         <header className="site-header">
-          <a className="brand" href="#/">
-            BY PRESS<span>记者团 · 培训手册</span>
+          <a
+            className="brand"
+            href="#/"
+            aria-label="北海艺术设计学院记者团 · 培训手册首页"
+          >
+            <span className="brand-symbol">
+              <img
+                src={`${import.meta.env.BASE_URL}assets/by-press-logo.jpeg`}
+                alt=""
+                width="1544"
+                height="510"
+              />
+            </span>
+            <span className="brand-wordmark">
+              BY PRESS<small>北海艺术设计学院记者团</small>
+            </span>
           </a>
           <nav aria-label="主导航">
             <a href="#/">课程目录</a>
@@ -660,15 +693,50 @@ export default function App() {
                 <span>北海艺术设计学院记者团</span>
                 <span>内部培训资料 / 2026</span>
               </div>
-              <motion.h1
-                initial={reduced ? false : { opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7 }}
-              >
-                从记录现场，
-                <br />
-                <span>到完成表达。</span>
-              </motion.h1>
+              <div className="hero-title-layout">
+                <h1>
+                  {["从记录现场，", "到完成表达。"].map((line, i) => (
+                    <span className="title-line" key={line}>
+                      <motion.span
+                        initial={reduced ? false : { opacity: 0, y: "105%" }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          duration: 0.8,
+                          delay: i * 0.15,
+                          ease: [0.22, 1, 0.36, 1],
+                        }}
+                      >
+                        {line}
+                      </motion.span>
+                    </span>
+                  ))}
+                </h1>
+                <motion.aside
+                  className="hero-note"
+                  aria-label="现场观察示意"
+                  initial={reduced ? false : { opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.35 }}
+                  style={{ y: reduced ? 0 : heroOffset }}
+                >
+                  <div className="section-label">第一课 / 学会观察</div>
+                  <motion.div
+                    className="focus-frame"
+                    initial={
+                      reduced ? false : { clipPath: "inset(0 100% 0 0)" }
+                    }
+                    animate={{ clipPath: "inset(0 0% 0 0)" }}
+                    transition={{
+                      duration: 0.9,
+                      delay: 0.4,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                  >
+                    <Scene kind="reveal" />
+                  </motion.div>
+                  <p>看清现场，才能组织画面。</p>
+                </motion.aside>
+              </div>
               <div className="hero-bottom">
                 <p>
                   一次活动的影像记录，从来不只是按下录制键。如何观察现场、选择镜头、判断素材、完成剪辑，并最终准确传递信息，是记者团每一位视频成员需要掌握的基本能力。
@@ -686,15 +754,36 @@ export default function App() {
               </div>
               <div className="hero-mark" aria-hidden="true">
                 <span>观察</span>
-                <i />
+                <motion.i
+                  initial={reduced ? false : { scaleX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                />
                 <span>记录</span>
-                <i />
+                <motion.i
+                  initial={reduced ? false : { scaleX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                />
                 <span>判断</span>
-                <i />
+                <motion.i
+                  initial={reduced ? false : { scaleX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                />
                 <span>表达</span>
               </div>
             </section>
-            <section className="home-statement">
+            <motion.section
+              className="home-statement"
+              initial={reduced ? false : { opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{ duration: 0.65 }}
+            >
               <p>
                 先理解事实。
                 <br />
@@ -707,7 +796,7 @@ export default function App() {
                 </p>
                 <span>八个章节 · 现场实务 · 交互训练</span>
               </div>
-            </section>
+            </motion.section>
             <section id="courses" className="course-list">
               <div className="section-heading">
                 <h2>课程目录</h2>
@@ -768,6 +857,22 @@ export default function App() {
             <aside className="sidebar no-print">
               <a href="#/">← 返回课程目录</a>
               <div className="section-label">课程章节</div>
+              <div className="mobile-course-nav">
+                <label>
+                  跳转章节
+                  <select
+                    aria-label="跳转章节"
+                    value={route}
+                    onChange={(e) => go(Number(e.target.value))}
+                  >
+                    {chapters.map((c, i) => (
+                      <option key={c.title} value={i}>
+                        {String(i + 1).padStart(2, "0")} · {c.title}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
               <nav aria-label="课程章节">
                 {chapters.map((c, i) => (
                   <a
@@ -809,7 +914,15 @@ export default function App() {
                 ))}
               </details>
             </aside>
-            <main id="main">{article(route)}</main>
+            <motion.main
+              id="main"
+              key={route}
+              initial={reduced ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35 }}
+            >
+              {article(route)}
+            </motion.main>
           </div>
         )}
         <footer>

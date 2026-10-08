@@ -99,9 +99,9 @@ export function Scene({
       aria-label="虚构校园活动矢量教学场景"
       className={`scene scene-${kind}`}
     >
-      <rect width="800" height="440" fill="#c4cec6" />
-      <path d="M0 0H800V280H0Z" fill="#deded4" />
-      <path d="M0 280H800V440H0Z" fill="#878f82" />
+      <rect width="800" height="440" fill="#bed3ef" />
+      <path d="M0 0H800V280H0Z" fill="#edf4fd" />
+      <path d="M0 280H800V440H0Z" fill="#87a9d2" />
       <g
         style={{
           transform: `translate(${400 - 400 * zoom}px,${260 - 260 * zoom}px) scale(${zoom})`,
@@ -109,23 +109,23 @@ export function Scene({
           transition: "transform .5s ease",
         }}
       >
-        <path d="M80 70H720V265H80Z" fill="#f1eee3" />
-        <path d="M112 100H688V177H112Z" fill="#a5493a" />
+        <path d="M80 70H720V265H80Z" fill="#ffffff" />
+        <path d="M112 100H688V177H112Z" fill="#245dbe" />
         <text x="400" y="148" textAnchor="middle" fill="#fff9ee" fontSize="26">
           校园艺术展 · 开幕现场
         </text>
-        <path d="M100 265H700V299H100Z" fill="#5f685b" />
+        <path d="M100 265H700V299H100Z" fill="#4d72a5" />
         {!["audience", "stage", "service", "hands"].includes(kind) &&
           [220, 400, 580].map((x, i) => (
             <g key={x}>
               <circle cx={x} cy={207} r="25" fill="#d0aa87" />
               <path
                 d={`M${x - 32} 240Q${x} 220 ${x + 32} 240L${x + 43} 324H${x - 43}Z`}
-                fill={i === 1 ? "#343d3a" : "#677b72"}
+                fill={i === 1 ? "#24496f" : "#5f88bc"}
               />
               <path
                 d={`M${x - 22} 323V388M${x + 22} 323V388`}
-                stroke="#343d3a"
+                stroke="#24496f"
                 strokeWidth="18"
               />
             </g>
@@ -182,7 +182,7 @@ export function Scene({
         )}
         <rect x="315" y="273" width="170" height="15" fill="#c8b288" />
         {kind === "reveal" && (
-          <path d="M120 165Q170 120 200 270L120 285Z" fill="#b84335" />
+          <path d="M120 165Q170 120 200 270L120 285Z" fill="#1559d6" />
         )}
         {kind === "screen" && (
           <rect x="105" y="180" width="120" height="70" fill="#eee" />
@@ -203,7 +203,7 @@ export function Scene({
         stroke="#fff"
         strokeWidth="2"
       />
-      <circle cx="745" cy="55" r="6" fill="#b84335" />
+      <circle cx="745" cy="55" r="6" fill="#1559d6" />
     </svg>
   );
 }
