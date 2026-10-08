@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "motion/react";
+import { motion, useReducedMotion, useScroll, useSpring } from "motion/react";
 import {
   chapters,
   shootChecks,
@@ -19,7 +13,6 @@ import {
 } from "./content";
 import {
   Camera,
-  Scene,
   Workflow,
   Shots,
   Rating,
@@ -86,7 +79,6 @@ export default function App() {
     damping: 32,
     restDelta: 0.001,
   });
-  const heroOffset = useTransform(scrollYProgress, [0, 0.2], [0, -35]);
   function update(p: Partial<Saved>) {
     setSaved((s) => ({ ...s, ...p }));
   }
@@ -650,6 +642,7 @@ export default function App() {
           跳转到正文
         </a>
         <motion.div
+          hidden={route === -1}
           className="reading-progress no-print"
           aria-hidden="true"
           style={{ scaleX: reduced ? scrollYProgress : smoothProgress }}
@@ -668,17 +661,17 @@ export default function App() {
                 height="510"
               />
             </span>
-            <span className="brand-wordmark">
-              BY PRESS<small>北海艺术设计学院记者团</small>
-            </span>
+            <span className="brand-wordmark">BY PRESS</span>
           </a>
           <nav aria-label="主导航">
-            <a href="#/">课程目录</a>
+            <a href={route === -1 ? "#courses" : "#/"}>课程目录</a>
             <button onClick={() => SO(true)}>
               搜索 <kbd>⌕</kbd>
             </button>
             <button onClick={() => teach(Math.max(route, 0))}>教学模式</button>
-            <button onClick={() => print("handbook")}>打印手册</button>
+            {route >= 0 && (
+              <button onClick={() => print("handbook")}>打印手册</button>
+            )}
           </nav>
         </header>
         {storageError && (
@@ -689,11 +682,7 @@ export default function App() {
         {route === -1 ? (
           <main id="main" className="home">
             <section className="hero">
-              <div className="hero-meta">
-                <span>北海艺术设计学院记者团</span>
-                <span>内部培训资料 / 2026</span>
-              </div>
-              <div className="hero-title-layout">
+              <div className="hero-inner">
                 <h1>
                   {["从记录现场，", "到完成表达。"].map((line, i) => (
                     <span className="title-line" key={line}>
@@ -711,96 +700,27 @@ export default function App() {
                     </span>
                   ))}
                 </h1>
-                <motion.aside
-                  className="hero-note"
-                  aria-label="现场观察示意"
-                  initial={reduced ? false : { opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.8, delay: 0.35 }}
-                  style={{ y: reduced ? 0 : heroOffset }}
+                <motion.div
+                  className="hero-intro"
+                  initial={reduced ? false : { opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.3 }}
                 >
-                  <div className="section-label">第一课 / 学会观察</div>
-                  <motion.div
-                    className="focus-frame"
-                    initial={
-                      reduced ? false : { clipPath: "inset(0 100% 0 0)" }
-                    }
-                    animate={{ clipPath: "inset(0 0% 0 0)" }}
-                    transition={{
-                      duration: 0.9,
-                      delay: 0.4,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                  >
-                    <Scene kind="reveal" />
-                  </motion.div>
-                  <p>看清现场，才能组织画面。</p>
-                </motion.aside>
-              </div>
-              <div className="hero-bottom">
-                <p>
-                  一次活动的影像记录，从来不只是按下录制键。如何观察现场、选择镜头、判断素材、完成剪辑，并最终准确传递信息，是记者团每一位视频成员需要掌握的基本能力。
-                </p>
-                <div>
-                  <a className="primary" href="#/chapter/1">
-                    开始学习 <span>↗</span>
+                  <p>
+                    在这里，学会拍摄、剪辑与团队协作。
+                    <br />
+                    让每一次记录，都有清晰的表达。
+                  </p>
+                  <a className="primary" href={`#/chapter/${saved.last + 1}`}>
+                    {saved.read.length || saved.last ? "继续学习" : "开始学习"}
+                    <span aria-hidden="true">↗</span>
                   </a>
-                  <a href="#courses">查看课程 ↓</a>
-                  <button onClick={() => teach()}>进入教学模式 →</button>
-                  <button onClick={() => go(saved.last)}>
-                    继续上次学习 · 第 {saved.last + 1} 章
-                  </button>
-                </div>
-              </div>
-              <div className="hero-mark" aria-hidden="true">
-                <span>观察</span>
-                <motion.i
-                  initial={reduced ? false : { scaleX: 0 }}
-                  whileInView={{ scaleX: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                />
-                <span>记录</span>
-                <motion.i
-                  initial={reduced ? false : { scaleX: 0 }}
-                  whileInView={{ scaleX: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                />
-                <span>判断</span>
-                <motion.i
-                  initial={reduced ? false : { scaleX: 0 }}
-                  whileInView={{ scaleX: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                />
-                <span>表达</span>
+                </motion.div>
               </div>
             </section>
-            <motion.section
-              className="home-statement"
-              initial={reduced ? false : { opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{ duration: 0.65 }}
-            >
-              <p>
-                先理解事实。
-                <br />
-                再组织画面。
-              </p>
-              <div>
-                <span className="section-label">学习方法</span>
-                <p>
-                  带着一个真实任务进入课程。理解技术，练习判断，把每一次拍摄变成可交接、可审核、可持续的团队工作。
-                </p>
-                <span>八个章节 · 现场实务 · 交互训练</span>
-              </div>
-            </motion.section>
             <section id="courses" className="course-list">
               <div className="section-heading">
                 <h2>课程目录</h2>
-                <span>按顺序学习，也可以随时查阅。</span>
               </div>
               {chapters.map((c, i) => (
                 <motion.a
@@ -817,38 +737,9 @@ export default function App() {
                   </span>
                   <div>
                     <h3>{c.title}</h3>
-                    <p>{c.intro}</p>
                   </div>
-                  <span className="course-meta">
-                    {saved.read.includes(i) ? "已读 ✓" : c.duration}
-                  </span>
                   <span className="course-arrow">↗</span>
                 </motion.a>
-              ))}
-            </section>
-            <section className="home-progress">
-              <div>
-                <span className="section-label">你的学习</span>
-                <h2>每一步，都留下记录。</h2>
-                <p>
-                  已读 {saved.read.length} / 8 章。学习数据仅存于当前浏览器。
-                </p>
-                <div className="progress-bar">
-                  <i style={{ width: `${(saved.read.length / 8) * 100}%` }} />
-                </div>
-              </div>
-              <button onClick={() => go(saved.last)}>继续学习 →</button>
-            </section>
-            <section className="source-links">
-              <h3>技术参考与使用说明</h3>
-              <p>
-                课程中的常规参数是本团队工作建议。设备功能以具体型号和固件为准，软件以当前客户端及账号权益为准。核对日期：2026
-                年 10 月 8 日。
-              </p>
-              {sources.map(([name, url]) => (
-                <a key={url} href={url} target="_blank" rel="noreferrer">
-                  {name} ↗
-                </a>
               ))}
             </section>
           </main>
@@ -922,12 +813,25 @@ export default function App() {
               transition={{ duration: 0.35 }}
             >
               {article(route)}
+              {route === 1 && (
+                <details className="source-links">
+                  <summary>技术参考与使用说明</summary>
+                  <p>
+                    课程参数为团队工作建议，设备功能以具体型号和固件为准，软件以当前客户端及账号权益为准。核对日期：2026
+                    年 10 月 8 日。
+                  </p>
+                  {sources.map(([name, url]) => (
+                    <a key={url} href={url} target="_blank" rel="noreferrer">
+                      {name} ↗
+                    </a>
+                  ))}
+                </details>
+              )}
             </motion.main>
           </div>
         )}
         <footer>
           <span>BY PRESS · 北海艺术设计学院记者团</span>
-          <span>从记录现场，到完成表达。</span>
           <a href="#/chapter/8">学习报告 ↗</a>
         </footer>
       </div>
